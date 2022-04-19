@@ -6,8 +6,8 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
+import React, {Component} from 'react';
+import {WebView} from 'react-native-webview';
 import {
   SafeAreaView,
   ScrollView,
@@ -26,7 +26,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
+const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -52,43 +52,66 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+// const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+// const backgroundStyle = {
+//   backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+// };
+
+// let routerName = '';
+
+// const onMessage = event => {
+//   let messageData = event.nativeEvent.data;
+//   // console.log('***messageData', messageData);
+//   messageData = JSON.parse(messageData);
+//   routerName = messageData.routeName;
+//   console.log('***routerName', routerName);
+// };
+
+class App extends Component {
+  state = {
+    routerName: '',
+    barStyle: 'light-content',
+    isDark: false,
   };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+  onMessage(event) {
+    let messageData = event.nativeEvent.data;
+    // console.log('***messageData', messageData);
+    messageData = JSON.parse(messageData);
+    let routerName = messageData.routeName;
+    console.log('***routerName', routerName);
+    this.setState({routerName});
+    const isDark = ['SignIn', 'SignUp'].includes(routerName);
+    this.setState({isDark});
+  }
+
+  render() {
+    const {isDark} = this.state;
+    // const uri = 'file:///android_asset/dist/index.html';
+    // 2979ff
+    const uri = 'http://42.194.207.119/';
+    return (
+      <View style={{width: '100%', flex: 1, backgroundColor: 'blue'}}>
+        <StatusBar
+          backgroundColor={isDark ? '#ffffff' : '#2979ff'}
+          barStyle={isDark ? 'dark-content' : 'light-content'}
+          translucent={false}></StatusBar>
+        {/* <WebView source={{uri: 'http://192.168.5.122:8080'}} /> */}
+        {/* <WebView source={{uri: 'http://42.194.207.119/'}} /> */}
+        {/* <WebView
+          source={{uri: 'file:///android_asset/static.bundle/index.html'}}
+          originWhitelist={['*']}
+        /> */}
+        <WebView
+          source={{uri}}
+          originWhitelist={['*']}
+          onMessage={this.onMessage.bind(this)}
+        />
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   sectionContainer: {

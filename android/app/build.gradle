@@ -247,6 +247,13 @@ android {
 
         }
     }
+
+    // 静态 html
+    // sourceSets {
+    //     main {
+    //         asset.srcDirs = ['src/main/assets', '../../static.bundle']
+    //     }
+    // }
 }
 
 dependencies {
